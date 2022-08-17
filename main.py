@@ -47,6 +47,15 @@ class Account:
         print('Expense: ' + str(self.expense))
         print()
 
+    def reviseName(self, new_name: str):
+        self.Name = new_name
+
+    def reviseTag(self, new_tag: Tag):
+        self.tag = new_tag
+
+    def reviseExpense(self, new_expense: int):
+        self.expense = new_expense
+
 
 def fCodeDir():
     print()
@@ -57,10 +66,18 @@ def fCodeDir():
     print('5: select the account')
     print('6: revise the account')
     print('7: delete the account')
-    print('8: clear search')
-    print('9: save the record')
-    print('10: escape')
+    print('8: save the record')
+    print('9: escape')
     print()
+
+
+# check account in list exit or not
+# 檢查是否有任何account存在
+def accExit(acc_List):
+    if len(acc_List) == 0:
+        return False
+    else:
+        return True
 
 
 # acc_list : the element of the list is class Account
@@ -117,15 +134,6 @@ while flag1:
 
         accList.append(Account(accId, accName, Tag[accTag], accExpense))
 
-        file.write(str(accList[-1].Id))
-        file.write('\n')
-        file.write(accList[-1].Name)
-        file.write('\n')
-        file.write(accList[-1].tag.value)
-        file.write('\n')
-        file.write(str(accList[-1].expense))
-        file.write('\n')
-        file.write('\n')
         # -------------------------------------------------------------------------------------
 
     elif fCode == 2:
@@ -136,8 +144,15 @@ while flag1:
     elif fCode == 3:
         print('search the account by ID')
         goalId = int(input('Enter the id:'))
-        Goal = searchId(accList, goalId)
-        Goal.display()
+        if accExit(accList):
+            Goal = searchId(accList, goalId)
+            try:
+                Goal.display()
+            except AttributeError:
+                print('not found')
+
+        else:
+            print('the account list is empty')
 
     elif fCode == 4:
         print('search the account by expense interval')
@@ -145,7 +160,71 @@ while flag1:
         high = int(input('input the max:'))
         searchExpense(accList, low, high)
 
-    elif fCode == 10:
+    elif fCode == 5:
+        print('5: select the account by ID')
+        selectId = int(input('input the Id of account you want to select:'))
+        goalAcc = searchId(accList, selectId)
+        try:
+            goalAcc.display()
+        except AttributeError:
+            print('not found')
+
+    elif fCode == 6:
+        print('6: revise the account')
+        print('select the account by ID')
+        selectId = int(input('input the Id of account you want to select:'))
+        goalAcc = searchId(accList, selectId)
+        try:
+            goalAcc.display()
+        except AttributeError:
+            print('not found')
+
+        try:
+            attr = str(input('choose Name, Tag, Expense:'))
+            if attr == 'Name':
+                newName = str(input('Enter new name:'))
+                goalAcc.reviseName(newName)
+            elif attr == 'Tag':
+                print('Enter food, clothing, housing, transportation, recreation, medical')
+                newTag = str(input('Enter new tag:'))
+                goalAcc.reviseTag(Tag[newTag])
+            elif attr == 'Expense':
+                newExpense = int(input('Enter new expense:'))
+                goalAcc.reviseExpense(newExpense)
+            else:
+                print('input wrong instruction')
+        # when tag input is not in Tag(enum) set, there will be KeyError
+        except KeyError:
+            print('input wrong tag name')
+            print()
+
+        goalAcc.display()
+
+    elif fCode == 7:
+        print('7: delete the account')
+        print('select the account by ID')
+        selectId = int(input('input the Id of account you want to select:'))
+        goalAcc = searchId(accList, selectId)
+        try:
+            goalAcc.display()
+            accList.remove(goalAcc)
+        except (AttributeError, ValueError):
+            print('not found')
+
+    elif fCode == 8:
+        print('8: save the record')
+        for i in accList:
+            file.write(str(i.Id))
+            file.write('\n')
+            file.write(i.Name)
+            file.write('\n')
+            file.write(i.tag.value)
+            file.write('\n')
+            file.write(str(i.expense))
+            file.write('\n')
+            file.write('\n')
+
+    elif fCode == 9:
         flag1 = False
 
 
